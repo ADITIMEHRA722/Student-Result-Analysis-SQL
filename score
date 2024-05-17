@@ -1,0 +1,56 @@
+/* this is file where we perform calculation in this file we calculated student maths and science score , correct and wrong score.
+
+SELECT
+		 st."roll_number",
+		 st."student_name",
+		 sl."class",
+		 sl."section",
+		 sl."school_name",
+		 SUM(CASE
+				 WHEN qpc.subject  = 'Math'
+				 AND	sr.option_marked  = ca.correct_option THEN 1
+				 ELSE 0
+			 END) AS math_correct,
+		 SUM(CASE
+				 WHEN qpc.subject  = 'Math'
+				 AND	sr.option_marked  != ca.correct_option
+				 AND	sr.option_marked  IN ( 'a'  , 'b'  , 'c'  , 'd'  ) THEN 1
+				 ELSE 0
+			 END) AS math_wrong,
+		 SUM(CASE
+				 WHEN qpc.subject  = 'Math'
+				 AND	sr.option_marked  = 'e' THEN 1
+				 ELSE 0
+			 END) AS math_yet_to_learn,
+		 SUM(CASE
+				 WHEN qpc.subject  = 'Science'
+				 AND	sr.option_marked  = ca.correct_option THEN 1
+				 ELSE 0
+			 END) AS science_correct,
+		 SUM(CASE
+				 WHEN qpc.subject  = 'Science'
+				 AND	sr.option_marked  != ca.correct_option
+				 AND	sr.option_marked  IN ( 'a'  , 'b'  , 'c'  , 'd'  ) THEN 1
+				 ELSE 0
+			 END) AS science_wrong,
+		 SUM(CASE
+				 WHEN qpc.subject  = 'Science'
+				 AND	sr.option_marked  = 'e' THEN 1
+				 ELSE 0
+			 END) AS science_yet_to_learn,
+		 COUNT(CASE
+				 WHEN qpc.subject  = 'Math' THEN 1
+			 END) AS total_math_questions,
+		 COUNT(CASE
+				 WHEN qpc.subject  = 'Science' THEN 1
+			 END) AS total_science_questions
+FROM  "school_class" AS  sl
+JOIN "student_list" st ON sl."section_id"  = st."section_id" 
+JOIN "student_response" sr ON st."roll_number"  = sr."roll_number" 
+JOIN "question_paper_cod" qpc ON sr."question_paper_code"  = qpc."paper_code" 
+JOIN "correct_answer" ca ON sr."question_number"  = ca."question_number"  
+GROUP BY st."roll_number",
+	 st."student_name",
+	 sl."class",
+	 sl."section",
+	  sl."school_name" 
